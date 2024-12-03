@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Celeste Gonzalez / COMP 272 002
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -105,6 +105,29 @@ public class Graph {
   public int findRoot() {
 
     // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME/SECTION AT TOP OF FILE
-    return -1;
+    //variable name for the count of incoming edges 
+    int[] incomingEdges = new int[numVertices];
+
+    for (int i =0; i < numVertices; i++) {
+      for (int dest: adjListArr[i]) {
+        incomingEdges[dest]++;
+      }
+    }
+
+    int countRoot =0;
+    int VertRoot = -1;
+
+    for (int i = 0; i < numVertices; i++) {
+      if (incomingEdges[i] ==0) {
+        countRoot++;
+        VertRoot = i;
+      }
+    }
+    
+    if (countRoot == 1) {
+      return vertexValues.get(VertRoot);
+    } else {
+        return -1;
+    }
   } 
 }
