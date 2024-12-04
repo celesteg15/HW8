@@ -72,17 +72,45 @@ class ProblemSolutions {
      * @return boolean          - True if all exams can be taken, else false.
      */
 
-    public boolean canFinish(int numExams, 
-                             int[][] prerequisites) {
+    public boolean canFinish(int numExams, int[][] prerequisites) {
       
         int numNodes = numExams;  // # of nodes in graph
 
         // Build directed graph's adjacency list
-        ArrayList<Integer>[] adj = getAdjList(numExams, 
-                                        prerequisites); 
+        ArrayList<Integer>[] adj = getAdjList(numExams, prerequisites); 
 
         // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        int[] nEdges = new int [numNodes];
+        Queue<Integer> queue = new LinkedList<>();
+
+        //calculate n number of edges per node
+        for (int i = 0; i < numNodes; i++) {
+            for (int nxt : adj[i]) {
+                nEdges[nxt]++;
+            }
+        }
+
+        for (int i = 0; i < numNodes; i++) { //add node w/ 0 degree edges/node to queue 
+            if (nEdges[i] == 0) {
+                queue.add(i);
+            }
+        }
+
+        int countNodes = 0; //# of nodes passed by
+
+        while (!queue.isEmpty()) {
+            int current = queue.poll(); //remove a node from the queue 
+            countNodes++; //add to count 
+
+            for (int nxt : adj[current]) { // reduce # of incoming edges/node
+                nEdges[nxt]--;  //remove the dependecy
+                if(nEdges[nxt] == 0) {
+                    //if a next node has no other dependent then add it to the queue
+                    queue.add(nxt);
+                }
+            }
+        }
+        return countNodes == numNodes; // if all processesed, no cycles
 
     }
 
@@ -166,21 +194,19 @@ class ProblemSolutions {
     public int numGroups(int[][] adjMatrix) {
         int numNodes = adjMatrix.length;
         Map<Integer,List<Integer>> graph = new HashMap();
-        int i = 0, j =0;
-
         /*
          * Converting the Graph Adjacency Matrix to
          * an Adjacency List representation. This
          * sample code illustrates a technique to do so.
          */
 
-        for(i = 0; i < numNodes ; i++){
-            for(j = 0; j < numNodes; j++){
+        for(int i = 0; i < numNodes ; i++){
+            for(int j = 0; j < numNodes; j++){
                 if( adjMatrix[i][j] == 1 && i != j ){
                     // Add AdjList for node i if not there
-                    graph.putIfAbsent(i, new ArrayList());
-                    // Add AdjList for node j if not there
-                    graph.putIfAbsent(j, new ArrayList());
+                    graph.putIfAbsent(i, new ArrayList<>());
+                    //Add AdjList for node j if not there
+                    graph.putIfAbsent(j, new ArrayList<>());
 
                     // Update node i adjList to include node j
                     graph.get(i).add(j);
@@ -192,7 +218,28 @@ class ProblemSolutions {
 
         // YOUR CODE GOES HERE - you can add helper methods, you do not need
         // to put all code in this method.
-        return -1;
+        boolean[] visited = new boolean[numNodes];
+        int groups = 0;
+
+        void dfs (int node) {
+            visited[node] = true;
+            for (int nxt : graph.getOrDefault(node, new ArrayList<>())) {
+                if (!visited[nxt]) {
+                    dfs(nxt);
+                }
+            }
+        }
+        
+    
+    
+        for (i = 0; i < numNodes; i++) {
+            if (!visited[i]) {
+                groups++; // Increment the group count
+                dfs(i);
+            }
+        }
+        return groups;
+
     }
 
 }
